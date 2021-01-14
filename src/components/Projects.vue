@@ -10,34 +10,16 @@
           <template v-slot:top>
             <v-toolbar flat>
               <v-toolbar-title>Projetos</v-toolbar-title>
-              <v-divider
-                  class="mx-4"
-                  inset
-                  vertical
-              ></v-divider>
+              <v-divider class="mx-4" inset vertical></v-divider>
               <v-spacer></v-spacer>
-              <v-dialog
-                  v-model="dialog"
-                  max-width="500px"
-              >
+              <v-dialog v-model="dialog" max-width="500px">
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                      color="primary"
-                      dark
-                      class="mb-2"
-                      v-bind="attrs"
-                      v-on="on"
-                  >
-                    <v-icon left>add</v-icon>
-                    Novo Projeto
-                  </v-btn>
+                  <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on"><v-icon left>add</v-icon>Novo Projeto</v-btn>
                 </template>
-
                 <v-card>
                   <v-card-title>
                     <span class="headline">{{ formTitle }}</span> <v-spacer /> <v-btn fab text @click="close"> <v-icon>close</v-icon> </v-btn>
                   </v-card-title>
-
                   <v-card-text>
                     <v-container>
                       <v-row>
@@ -116,7 +98,6 @@
                               @click:append-outer="addPerson()"
                           ></v-text-field>
                         </v-col>
-
                         <div v-if="editedItem.persons.length > 0">
                           <span>Participantes:</span>
                           <ul>
@@ -127,27 +108,13 @@
                       </v-row>
                     </v-container>
                   </v-card-text>
-
                   <v-card-actions>
                     <v-spacer/>
-                    <v-btn
-                        v-if="editedIndex === -1"
-                        color="success"
-                        @click="save"
-                    >
-                      Salvar
-                    </v-btn>
-                    <v-btn
-                        v-else
-                        color="warning"
-                        @click="edit"
-                    >
-                      Editar
-                    </v-btn>
+                    <v-btn v-if="editedIndex === -1" color="success" @click="save">Salvar</v-btn>
+                    <v-btn v-else color="warning" @click="edit">Editar</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
-
               <v-dialog v-model="dialogDelete" max-width="300">
                 <v-card>
                   <v-card-title class="headline">Deletar este Projeto ?</v-card-title>
@@ -158,7 +125,6 @@
                   </v-card-actions>
                 </v-card>
               </v-dialog>
-
               <v-dialog v-model="dialogCalc" max-width="500">
                 <v-card>
                   <v-card-title class="headline">Calcular Investimento</v-card-title>
@@ -236,20 +202,12 @@
               <span>Deletar</span>
             </v-tooltip>
           </template>
-
           <template v-slot:item.risk="{ item }">
-            <v-chip
-                :color="item.risk === 0 ? 'green' : item.risk === 1 ? 'warning' : 'error'"
-                dark
-            >
-              {{ item.risk === 0 ? 'Baixo' : item.risk === 1 ? 'Médio' : 'Alto' }}
-            </v-chip>
+            <v-chip :color="item.risk === 0 ? 'green' : item.risk === 1 ? 'warning' : 'error'" dark>{{ item.risk === 0 ? 'Baixo' : item.risk === 1 ? 'Médio' : 'Alto' }}</v-chip>
           </template>
-
           <template v-slot:item.money="{ item }">
            <strong>R$ {{item.money}}</strong>
           </template>
-
           <template v-slot:item.persons="{ item }">
             <div v-if="item.persons.length > 0">
               <ol>
@@ -257,7 +215,6 @@
               </ol>
             </div>
           </template>
-
         </v-data-table>
       </v-col>
     </v-row>
@@ -327,55 +284,51 @@ export default {
     initialize () {
       this.desserts = [
         {
-          name: 'A',
+          name: 'Morotola',
           risk: 0,
-          startDate: '27/01/1995',
-          endDate: '27/01/1995',
-          money: '2.000',
+          startDate: '04/01/2021',
+          endDate: '31/12/2021',
+          money: '22.000',
           persons: ['jackson', 'andreza', 'eduardo'],
           investment: undefined,
           returnValue: 0,
         },
         {
-          name: 'B',
+          name: 'Intern',
           risk: 1,
-          startDate: '27/01/1995',
-          endDate: '27/01/1995',
+          startDate: '11/01/2021',
+          endDate: '15/01/2021',
           money: '5.000',
           persons: ['jackson', 'andreza'],
           investment: undefined,
           returnValue: 0,
         },
         {
-          name: 'C',
+          name: 'Tests',
           risk: 2,
-          startDate: '27/01/1995',
-          endDate: '27/01/1995',
-          money: '4.000',
+          startDate: '11/01/2021',
+          endDate: '15/01/2021',
+          money: '3.500',
           persons: ['jackson'],
           investment: undefined,
           returnValue: 0,
         },
       ]
     },
-
     handleEnter(e) {
       if (e.key === 'Enter') {
         this.addPerson()
       }
     },
-
     addPerson(){
       this.editedItem.persons.push(this.person)
       this.person =  undefined
     },
-
     editItem (item) {
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialog = true
     },
-
     calculate(){
       if(Number(this.editedItem.investment) < Number(this.editedItem.money)){
         alert('Error: o valor a ser investido não pode ser menor que o valor do projeto')
@@ -390,24 +343,20 @@ export default {
         Object.assign(this.desserts[this.editedIndex], this.editedItem)
       }
     },
-
     calcItem(item){
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialogCalc = true
     },
-
     deleteItem (item) {
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialogDelete = true
     },
-
     deleteItemConfirm () {
       this.desserts.splice(this.editedIndex, 1)
       this.closeDelete()
     },
-
     close () {
       this.dialog = false
       this.$nextTick(() => {
@@ -415,7 +364,6 @@ export default {
         this.editedIndex = -1
       })
     },
-
     closeDelete () {
       this.dialogDelete = false
       this.$nextTick(() => {
@@ -423,22 +371,12 @@ export default {
         this.editedIndex = -1
       })
     },
-
     save () {
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem)
-      } else {
-        this.desserts.push(this.editedItem)
-      }
+      this.desserts.push(this.editedItem)
       this.close()
     },
-
     edit () {
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem)
-      } else {
-        this.desserts.push(this.editedItem)
-      }
+      Object.assign(this.desserts[this.editedIndex], this.editedItem)
       this.close()
     },
   },
