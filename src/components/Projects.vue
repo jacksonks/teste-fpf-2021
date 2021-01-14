@@ -32,98 +32,160 @@
                     Novo Projeto
                   </v-btn>
                 </template>
+
                 <v-card>
                   <v-card-title>
-                    <span class="headline">{{ formTitle }}</span>
+                    <span class="headline">{{ formTitle }}</span> <v-spacer /> <v-btn fab text @click="close"> <v-icon>close</v-icon> </v-btn>
                   </v-card-title>
 
                   <v-card-text>
                     <v-container>
                       <v-row>
-                        <v-col
-                            cols="12"
-                            sm="6"
-                            md="4"
-                        >
+                        <v-col cols="12" xs="12" sm="12">
                           <v-text-field
                               v-model="editedItem.name"
                               label="Nome"
+                              outlined
+                              hide-details
+                              clearable
                           ></v-text-field>
                         </v-col>
-                        <v-col
-                            cols="12"
-                            sm="6"
-                            md="4"
-                        >
-                          <v-text-field
+                        <v-col cols="12" xs="12" sm="12">
+                          <span>Risco do Projeto:</span>
+                          <v-radio-group
                               v-model="editedItem.risk"
-                              label="Risco"
-                          ></v-text-field>
+                              row
+                              hide-details
+                          >
+                            <v-radio
+                                label="Baixo"
+                                :value="0"
+                                color="success"
+                            ></v-radio>
+                            <v-radio
+                                label="Medio"
+                                :value="1"
+                                color="warning"
+                            ></v-radio>
+                            <v-radio
+                                label="Alto"
+                                :value="2"
+                                color="error"
+                            ></v-radio>
+                          </v-radio-group>
                         </v-col>
-                        <v-col
-                            cols="12"
-                            sm="6"
-                            md="4"
-                        >
+                        <v-col cols="12" xs="12" sm="6">
                           <v-text-field
                               v-model="editedItem.startDate"
-                              label="startDate"
-                              v-mask="'##/##/####'"
+                              label="Data de início"
+                              placeholder="DD/MM/YYYY"
+                              outlined
+                              hide-details
+                              clearable
                           ></v-text-field>
                         </v-col>
-                        <v-col
-                            cols="12"
-                            sm="6"
-                            md="4"
-                        >
+                        <v-col cols="12" xs="12" sm="6">
                           <v-text-field
                               v-model="editedItem.endDate"
-                              label="endDate"
+                              label="Data de término"
+                              placeholder="DD/MM/YYYY"
+                              outlined
+                              hide-details
+                              clearable
                           ></v-text-field>
                         </v-col>
-                        <v-col
-                            cols="12"
-                            sm="6"
-                            md="4"
-                        >
+                        <v-col cols="12" xs="12" sm="6">
                           <v-text-field
                               v-model="editedItem.money"
-                              label="money (g)"
+                              label="Valor do Projeto"
+                              prefix="R$"
+                              type="number"
+                              outlined
+                              hide-details
+                              clearable
                           ></v-text-field>
                         </v-col>
+                        <v-col cols="12" xs="12" sm="12">
+                          <v-text-field
+                              v-model="person"
+                              outlined
+                              hide-details
+                              clearable
+                              label="Participante"
+                              append-outer-icon="add_circle"
+                              @click:append-outer="addPerson()"
+                          ></v-text-field>
+                        </v-col>
+
+                        <div v-if="editedItem.persons.length > 0">
+                          <span>Participantes:</span>
+                          <ul>
+                            <li v-for="(item, i) in editedItem.persons" :key="i">{{ item }}</li>
+                          </ul>
+                        </div>
+
                       </v-row>
                     </v-container>
                   </v-card-text>
 
                   <v-card-actions>
-                    <v-spacer></v-spacer>
+                    <v-spacer/>
                     <v-btn
-                        color="blue darken-1" left
-                        @click="close"
-                    >
-                      Cancel
-                    </v-btn>
-                    <v-btn
-                        color="blue darken-1"
+                        v-if="editedIndex === -1"
+                        color="success"
                         @click="save"
-                        :disabled="formValidade"
                     >
-                      Save
+                      Salvar
+                    </v-btn>
+                    <v-btn
+                        v-else
+                        color="warning"
+                        @click="edit"
+                    >
+                      Editar
                     </v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
-              <v-dialog v-model="dialogDelete" max-width="500px">
+
+              <v-dialog v-model="dialogDelete" max-width="300">
                 <v-card>
-                  <v-card-title class="headline">Are you sure you want to delete this item?</v-card-title>
+                  <v-card-title class="headline">Deletar este Projeto ?</v-card-title>
                   <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-                    <v-btn color="blue darken-1" text @click="deleteItemConfirm">OK</v-btn>
-                    <v-spacer></v-spacer>
+                    <v-btn color="error" text @click="closeDelete">Cancel</v-btn>
+                    <v-spacer/>
+                    <v-btn color="success" text @click="deleteItemConfirm">OK</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
+
+              <v-dialog v-model="dialogCalc" max-width="500">
+                <v-card>
+                  <v-card-title class="headline">Calcular Investimento?</v-card-title>
+                  <v-card-text>
+                    <v-col cols="12" xs="12" sm="12">
+                      <v-text-field
+                          v-model="editedItem.investment"
+                          label="Valor do Investimento"
+                          prefix="R$"
+                          type="number"
+                          outlined
+                          hide-details
+                          clearable
+                          append-outer-icon="calculate"
+                          @click:append-outer="calculate()"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" xs="12" sm="6" v-show="editedItem.returnValue">
+                      <Strong>R$ {{editedItem.returnValue}}</Strong>
+                    </v-col>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-btn color="error" text @click="dialogCalc = false">Cancel</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+
             </v-toolbar>
           </template>
           <template v-slot:item.actions="{ item }">
@@ -132,7 +194,7 @@
                 <v-icon
                     class="mr-3"
                     color="success"
-                    @click="editItem(item)"
+                    @click="calcItem(item)"
                     v-bind="attrs"
                     v-on="on"
                 >
@@ -174,11 +236,23 @@
 
           <template v-slot:item.risk="{ item }">
             <v-chip
-                :color="getColor(item.risk)"
+                :color="item.risk === 0 ? 'green' : item.risk === 1 ? 'warning' : 'error'"
                 dark
             >
-              {{ item.risk == 0 ? 'Baixo' : item.risk == 1 ? 'Médio' : 'Alto'  }}
+              {{ item.risk === 0 ? 'Baixo' : item.risk === 1 ? 'Médio' : 'Alto' }}
             </v-chip>
+          </template>
+
+          <template v-slot:item.money="{ item }">
+           <strong>R$ {{item.money}}</strong>
+          </template>
+
+          <template v-slot:item.persons="{ item }">
+            <div v-if="item.persons.length > 0">
+              <ol>
+                <li v-for="(item, i) in item.persons" :key="i"> {{ item }}</li>
+              </ol>
+            </div>
           </template>
 
         </v-data-table>
@@ -188,22 +262,22 @@
 </template>
 
 <script>
-import {mask} from "vue-the-mask";
 export default {
   name: "Projects",
-  directives: { mask },
     data: () => ({
     dialog: false,
     dialogDelete: false,
+      dialogCalc: false,
     headers: [
       { text: 'Nome', value: 'name', align: 'start', sortable: false },
       { text: 'Date', value: 'startDate', align: 'center', sortable: false },
       { text: 'Date', value: 'endDate', align: 'center', sortable: false },
       { text: 'Valor do Projeto', value: 'money', align: 'center', sortable: false },
       { text: 'Risco', value: 'risk', align: 'center', sortable: false },
-
+      { text: 'Participantes', value: 'persons', align: 'center', sortable: false },
       { text: 'Actions', value: 'actions', align: 'center', sortable: false },
     ],
+      person: undefined,
     desserts: [],
     editedIndex: -1,
     editedItem: {
@@ -212,6 +286,9 @@ export default {
       startDate: undefined,
       endDate: undefined,
       money: undefined,
+      persons: [],
+      investment: undefined,
+      returnValue: undefined,
     },
     defaultItem: {
       name: undefined,
@@ -219,17 +296,20 @@ export default {
       startDate: undefined,
       endDate: undefined,
       money: undefined,
+      persons: [],
+      investment: undefined,
+      returnValue: undefined,
     },
   }),
   created () {
     this.initialize()
   },
+  mounted() {
+    window.addEventListener('keydown', this.handleEnter)
+  },
   computed: {
-    formValidade(){
-      return this.name
-    },
     formTitle () {
-      return this.editedIndex === -1 ? 'New Project' : 'Edit Project'
+      return this.editedIndex === -1 ? 'Novo Projeto' : 'Editar Projeto'
     },
   },
   watch: {
@@ -248,56 +328,70 @@ export default {
           risk: 0,
           startDate: '27/01/1995',
           endDate: '27/01/1995',
-          money: 2.000,
+          money: '2.000',
+          persons: ['jackson', 'andreza', 'eduardo'],
+          investment: 0,
+          returnValue: 0,
         },
         {
           name: 'B',
           risk: 1,
           startDate: '27/01/1995',
           endDate: '27/01/1995',
-          money: 5.000,
+          money: '5.000',
+          persons: ['jackson', 'andreza'],
+          investment: 0,
+          returnValue: 0,
         },
         {
           name: 'C',
           risk: 2,
           startDate: '27/01/1995',
           endDate: '27/01/1995',
-          money: 4.000,
-        },
-        {
-          name: 'A',
-          risk: 0,
-          startDate: '27/01/1995',
-          endDate: '27/01/1995',
-          money: 2.000,
-        },
-        {
-          name: 'B',
-          risk: 1,
-          startDate: '27/01/1995',
-          endDate: '27/01/1995',
-          money: 5.000,
-        },
-        {
-          name: 'C',
-          risk: 2,
-          startDate: '27/01/1995',
-          endDate: '27/01/1995',
-          money: 4.000,
+          money: '4.000',
+          persons: ['jackson'],
+          investment: 0,
+          returnValue: 0,
         },
       ]
     },
 
-    getColor (risk) {
-      if (risk === 2) return 'red'
-      else if (risk === 1) return 'orange'
-      else return 'green'
+    handleEnter(e) {
+      if (e.key === 'Enter') {
+        this.addPerson()
+      }
+    },
+
+    addPerson(){
+      this.editedItem.persons.push(this.person)
+      this.person =  undefined
     },
 
     editItem (item) {
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialog = true
+    },
+
+    calculate(){
+      if(Number(this.editedItem.investment) < Number(this.editedItem.money)){
+        alert('Error: o valor a ser investido não pode ser menor que o valor do projeto')
+      } else if(this.editedItem.risk === 0){
+        this.editedItem.returnValue = Number(this.editedItem.investment)*0.05
+        Object.assign(this.desserts[this.editedIndex], this.editedItem)
+      } else if(this.editedItem.risk === 1){
+        this.editedItem.returnValue = Number(this.editedItem.investment)*0.10
+        Object.assign(this.desserts[this.editedIndex], this.editedItem)
+      } else if (this.editedItem.risk === 2){
+        this.editedItem.returnValue = Number(this.editedItem.investment)*0.20
+        Object.assign(this.desserts[this.editedIndex], this.editedItem)
+      }
+    },
+
+    calcItem(item){
+      this.editedIndex = this.desserts.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.dialogCalc = true
     },
 
     deleteItem (item) {
@@ -328,6 +422,15 @@ export default {
     },
 
     save () {
+      if (this.editedIndex > -1) {
+        Object.assign(this.desserts[this.editedIndex], this.editedItem)
+      } else {
+        this.desserts.push(this.editedItem)
+      }
+      this.close()
+    },
+
+    edit () {
       if (this.editedIndex > -1) {
         Object.assign(this.desserts[this.editedIndex], this.editedItem)
       } else {
