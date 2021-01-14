@@ -161,7 +161,7 @@
 
               <v-dialog v-model="dialogCalc" max-width="500">
                 <v-card>
-                  <v-card-title class="headline">Calcular Investimento?</v-card-title>
+                  <v-card-title class="headline">Calcular Investimento</v-card-title>
                   <v-card-text>
                     <v-col cols="12" xs="12" sm="12">
                       <v-text-field
@@ -176,8 +176,11 @@
                           @click:append-outer="calculate()"
                       ></v-text-field>
                     </v-col>
-                    <v-col cols="12" xs="12" sm="6" v-show="editedItem.returnValue">
-                      <Strong>R$ {{editedItem.returnValue}}</Strong>
+                    <v-col cols="12" xs="12" sm="12" v-show="editedItem.returnValue">
+                      <strong>
+                        Retorno do Investimento:
+                        <br/>
+                        R$ {{editedItem.returnValue}}</strong>
                     </v-col>
                   </v-card-text>
                   <v-card-actions>
@@ -330,7 +333,7 @@ export default {
           endDate: '27/01/1995',
           money: '2.000',
           persons: ['jackson', 'andreza', 'eduardo'],
-          investment: 0,
+          investment: undefined,
           returnValue: 0,
         },
         {
@@ -340,7 +343,7 @@ export default {
           endDate: '27/01/1995',
           money: '5.000',
           persons: ['jackson', 'andreza'],
-          investment: 0,
+          investment: undefined,
           returnValue: 0,
         },
         {
@@ -350,7 +353,7 @@ export default {
           endDate: '27/01/1995',
           money: '4.000',
           persons: ['jackson'],
-          investment: 0,
+          investment: undefined,
           returnValue: 0,
         },
       ]
